@@ -1,0 +1,779 @@
+---
+title: "NYC Car Crash Data Visualization"
+author: "Ubaydul H Sami"
+date: "2024-03-15"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r install, eval = FALSE}
+
+## This code will not be evaluated automatically.
+## (Notice the eval = FALSE declaration in the options section of the
+## code chunk)
+
+my_packages <- c("tidyverse", "broom", "coefplot", "cowplot",
+                 "gapminder", "GGally", "ggrepel", "ggridges", "gridExtra",
+                 "here", "interplot", "margins", "maps", "mapproj",
+                 "mapdata", "MASS", "quantreg", "rlang", "scales",
+                 "survey", "srvyr", "viridis", "viridisLite", "devtools")
+
+install.packages(my_packages, repos = "http://cran.rstudio.com")
+
+```
+
+
+```{r setup, include=FALSE}
+
+## By defult, show code for all chunks in the knitted document,
+## as well as the output. To override for a particular chunk
+## use echo = FALSE in its options.
+knitr::opts_chunk$set(echo = TRUE) 
+
+## Set the default size of figures
+knitr::opts_chunk$set(fig.width=8, fig.height=5)  
+
+## Load the libraries we will be using
+library(gapminder)
+library(here)
+library(
+  socviz)
+# library(tidyverse)
+library(ggplot2)
+```
+
+# first we will load the dataset to view all the data on our raw dataset
+```{r}
+crash_data <- read.csv('dataset/Motor_Vehicle_Collisions__Person.csv')
+head(crash_data)
+```
+# now that we have our whole dataset loaded, we will try to select columns that we consider as important or useful for our project
+
+```{r}
+# we will first see what are the names of the data columns for our dataset
+names(crash_data)
+
+```
+```{r}
+# now we will select the useful (assumed) columns
+
+crash_data_selected = crash_data[,c("UNIQUE_ID", "COLLISION_ID", "CRASH_DATE", "CRASH_TIME", "PERSON_INJURY", "EMOTIONAL_STATUS", "BODILY_INJURY", "POSITION_IN_VEHICLE", "SAFETY_EQUIPMENT", "COMPLAINT", "PED_ACTION", "CONTRIBUTING_FACTOR_1", "CONTRIBUTING_FACTOR_2", "PERSON_SEX")]
+
+head(crash_data_selected)
+```
+```{r}
+# for the purpose of easier access we will change columns name to all lowercase letter
+names(crash_data_selected) <- tolower(names(crash_data_selected))
+head(crash_data_selected)
+```
+```{r}
+# checking the datatypes of all columns
+
+str(crash_data_selected)
+```
+
+# Now from 'crash_date' column we will create two new columns 'year' & 'month' that later on we will use visualizing data 
+### 'year' -> will be used to visualize accident increament or decrement over the years
+### 'month' -> will be used to visualize which time of the month has highest & lowest number of crash occured
+
+
+```{r}
+# we will first change the datatype of 'crash_date' columns from character to Date type
+
+crash_data_selected$crash_date <- as.Date(crash_data_selected$crash_date, format = "%m/%d/%Y")
+
+# Now, create new columns 'year' & 'month'
+crash_data_selected$year <- format(crash_data_selected$crash_date, "%Y")
+crash_data_selected$month <- format(crash_data_selected$crash_date, "%m")
+
+# Check the data types of new columns
+str(crash_data_selected)
+
+# View the dataset
+print(head(crash_data_selected))
+```
+```{r}
+crash_data_selected <- subset(crash_data_selected, year > 2015)
+head(crash_data_selected)
+```
+
+```{r}
+# above we see year & month column datatype is 'double', we will change the datatype to integer for convenience
+
+crash_data_selected$year <- as.factor(crash_data_selected$year)
+crash_data_selected$month <- as.factor(crash_data_selected$month)
+
+# checking the datatype again to verify change was made
+
+str(crash_data_selected)
+```
+
+# Since we have our initial version of desired dataset we will first export it (for keeping it safe) and then will start visualizing our data
+
+
+```{r}
+# Export dataset to a CSV file
+write.csv(crash_data_selected, "dataset/crash_data_selected.csv", row.names = FALSE)
+```
+### 1) visualizing crash number over the years
+```{r}
+number_of_years <- length(unique(crash_data_selected$year))
+number_of_years
+```
+```{r}
+# droping rows with 2024 data beacuse it is not a full year yet
+crash_data_selected <- crash_data_selected[crash_data_selected$year != 2024, ]
+
+# Aggregate crash numbers by collision ID and year
+
+crash_counts_year <- aggregate(collision_id ~ year, data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_counts_year)[2] <- "frequency"
+
+crash_counts_year
+```
+
+```{r}
+# Create the plot using crash_counts dataframe
+time_line <- ggplot(crash_counts_year, aes(x = year, y = frequency, color = 'red')) + geom_point() +
+  geom_line(group = 1) +
+  labs(title = "Crash Numbers Over the Years ",
+       x = "Year",
+       y = "Crash Number",
+       color = "Year") +
+  theme_minimal()
+
+# showing plot
+time_line
+
+```
+```{r}
+ggsave('over the years crash data.png', plot = time_line)
+```
+
+### From the timeline graph we see number of collision was gradually rising 2012 to 2017 and it starts gradually droping from 2018 to 2023
+### we may want to find out what happened in 2017 that helped redusing the number of collisions in NYC
+
+
+
+### 2) visualizing crash by months
+```{r}
+number_of_months <- length(unique(crash_data_selected$month))
+number_of_months
+```
+```{r}
+
+# Aggregate crash numbers by collision ID and month
+
+crash_counts_month <- aggregate(collision_id ~ month, data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_counts_month)[2] <- "frequency"
+
+crash_counts_month
+```
+
+
+
+```{r}
+# Create a bar plot using crash by month
+bar_graph_month <- ggplot(data = crash_counts_month, aes(x = month, y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity", color = "black") +  # Create bars with specified colors
+  labs(title = "Car Crash Frequency by Month", x = "Month", y = "Number of crash") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightsalmon", high = "darkred", name = "Frequency")
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_month)
+```
+```{r}
+ggsave('for each month crash data.png', plot =bar_graph_month)
+```
+
+### Visualizing crash data for each month but separated by years
+
+```{r}
+# Aggregate crash numbers by collision ID, month and year
+
+crash_counts_month_year <- aggregate(collision_id ~ month + year , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_counts_month_year)[3] <- "frequency"
+
+head(crash_counts_month_year)
+```
+
+
+```{r size= 20}
+# Create a bar plot using crash by month & year
+bar_graph_month_year <- ggplot(data = crash_counts_month_year, aes(x = month, y = frequency, fill = frequency)) +
+  facet_grid(year ~ .) +
+  geom_bar(stat = "identity", color = "black") +  # Create bars with specified colors
+  labs(title = "Car Crash Frequency by Month & Year", x = "Month", y = "Number of crash") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightsalmon", high = "darkred", name = "Frequency")
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_month_year)
+
+```
+```{r}
+ggsave('crash data by month and year.png', plot = bar_graph_month_year)
+```
+
+### 3) Visualizing crash data for time of the day
+
+```{r}
+# Aggregate crash numbers by collision ID and crash_time
+
+crash_counts_time <- aggregate(collision_id ~ crash_time , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_counts_time)[2] <- "frequency"
+
+head(crash_counts_time, 20)
+```
+
+
+```{r}
+library(hms)
+
+# Append ":00" to represent seconds
+crash_counts_time$crash_time <- paste0(crash_counts_time$crash_time, ":00")
+
+# Convert to hms format
+crash_counts_time$crash_time <- as_hms(crash_counts_time$crash_time)
+library(scales)
+# Create a histogram plot using crash by time
+histogram_crash_time <- ggplot(data = crash_counts_time, aes(x = crash_time, y = frequency, fill = frequency)) +
+  geom_histogram(stat = "identity", color = "blue") +  # Create bars with specified colors
+  labs(title = "Car Crash Frequency by Time of the Day", x = "Time of the Day", y = "Number of crash") +  # Add title and axis labels
+  # scale_fill_gradient(low = "lightsalmon", high = "darkred", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + # Rotate x-axis labels for better readability
+  scale_x_time(labels = time_format("%H:%M"), breaks = breaks_width("2 hour"))  # Adjust the breaks
+
+# Show the plot
+print(histogram_crash_time)
+
+```
+
+```{r}
+ggsave('images/crash data by time of the day.png', plot = histogram_crash_time)
+```
+
+### 4) Visualizing crash data by Gender
+
+```{r}
+# Aggregate crash numbers by person_sex
+
+crash_counts_person_sex <- aggregate(collision_id ~ person_sex , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_counts_person_sex)[2] <- "frequency"
+
+crash_counts_person_sex
+```
+
+```{r}
+# we see there are a lot of missing data and unknown data, we will drop them
+crash_counts_person_sex <- subset(crash_counts_person_sex, person_sex == 'F' | person_sex == 'M')
+crash_counts_person_sex
+```
+
+
+```{r size= 20}
+# Create a bar plot using crash by month & year
+bar_graph_gender <- ggplot(data = crash_counts_person_sex, aes(x = person_sex, y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity", color = "black") +  # Create bars with specified colors
+  labs(title = "Crash Frequency by Gender", x = "Gender", y = "Number of crash") +  # Add title and axis labels
+  scale_fill_gradient(low = "orange", high = "red", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_gender)
+
+```
+```{r}
+ggsave('images/crash data by gender.png', plot = bar_graph_gender)
+```
+
+### 5) Visualizing crash data for Accident Results (complaint)
+
+```{r}
+# we think emotinal status will not be significant impact while analysis the data so we will delte the column
+crash_data_selected <- subset(crash_data_selected, select = - emotional_status)
+head(crash_data_selected)
+```
+
+```{r}
+
+# Aggregate crash numbers by collision ID and injury complaint
+
+complaint_counts <- aggregate(collision_id ~ complaint, data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(complaint_counts)[2] <- "frequency"
+
+complaint_counts
+```
+```{r}
+# removing blank & meaningless values
+complaint_counts <- complaint_counts[!(complaint_counts$complaint %in% c('Unknown', 'Does Not Apply')) & complaint_counts$complaint != '' & !is.na(complaint_counts$complaint), ]
+
+complaint_counts
+```
+# marging similar category
+```{r}
+# first, merge 'Complaint of Pain' and 'Complaint of Pain or Nausea' into one category
+complaint_counts <- complaint_counts %>%
+  mutate(complaint = ifelse(grepl("Complaint of Pain", complaint) | grepl("Complaint of Pain or Nausea", complaint), "Complaint of Pain or Nausea", complaint))
+
+
+# Merge 'Minor Burn' and 'Moderate Burn' into one category
+complaint_counts <- complaint_counts %>%
+  mutate(complaint = ifelse(grepl("Minor Burn", complaint) | grepl("Moderate Bura", complaint), "Minor or Moderate Bur", complaint))
+
+# Merge 'Fracture - Dislocation' and 'Fracture - Distorted - Dislocation' into one category
+complaint_counts <- complaint_counts %>%
+  mutate(complaint = ifelse(grepl('Fracture - Dislocation', complaint) | (grepl('Fracture - Distorted - Dislocation', complaint)), 'Fracture - Distorted - Dislocation', complaint))
+
+
+complaint_counts
+
+
+```
+
+```{r}
+
+
+# Create a bar plot using person bodily complaint after crash
+bar_graph_complaint <- ggplot(data = complaint_counts, aes(x = reorder(complaint, -frequency), y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Injury Complaint After crashes ", x = "Injury complaint", y = "Number of Incident") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightblue", high = "blue", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_complaint)
+```
+```{r}
+ggsave('injury complaint for crash data.png', plot =bar_graph_complaint)
+```
+
+### Visualizing crash data for Accident Results
+
+
+```{r}
+# Aggregate injury complaint by collision ID
+
+complaint_counts_year <- aggregate(collision_id ~ complaint + year , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(complaint_counts_year)[3] <- "frequency"
+
+complaint_counts_year <- complaint_counts_year[!(complaint_counts_year$complaint %in% c('Unknown', 'Does Not Apply')) & complaint_counts_year$complaint != '' & !is.na(complaint_counts_year$complaint), ]
+
+
+head(complaint_counts_year)
+```
+# marging similar category
+```{r}
+# first, merge 'Complaint of Pain' and 'Complaint of Pain or Nausea' into one category
+complaint_counts_year <- complaint_counts_year %>%
+  mutate(complaint = ifelse(grepl("Complaint of Pain", complaint) | grepl("Complaint of Pain or Nausea", complaint), "Complaint of Pain or Nausea", complaint))
+
+
+# Merge 'Minor Burn' and 'Moderate Burn' into one category
+complaint_counts_year <- complaint_counts_year %>%
+  mutate(complaint = ifelse(grepl("Minor Burn", complaint) | grepl("Moderate Bura", complaint), "Minor or Moderate Bur", complaint))
+
+# Merge 'Fracture - Dislocation' and 'Fracture - Distorted - Dislocation' into one category
+complaint_counts_year <- complaint_counts_year %>%
+  mutate(complaint = ifelse(grepl('Fracture - Dislocation', complaint) | (grepl('Fracture - Distorted - Dislocation', complaint)), 'Fracture - Distorted - Dislocation', complaint))
+
+
+head(complaint_counts_year)
+
+
+```
+
+```{r fig.height= 7 }
+# Create a bar plot for Injury complaint
+bar_graph_complaint_counts_year <- ggplot(data = complaint_counts_year, aes(x = reorder(complaint, -frequency), y = frequency, fill = frequency)) +
+  facet_grid(year ~ .) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Injury Complain after crash by years", x = "Injury Complain", y = "Frequency") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightblue", high = "blue", name = "Frequency")+
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_complaint_counts_year)
+
+```
+```{r}
+ggsave('injury complaint for crash data by year.png', plot = bar_graph_complaint_counts_year)
+```
+
+
+### 7) visualizing body injury type after crash
+```{r}
+body_injury_counts <- length(unique(crash_data_selected$bodily_injury))
+body_injury_counts
+```
+```{r}
+
+# Aggregate crash numbers by collision ID and bodily_injury
+
+crash_body_injury <- aggregate(collision_id ~ bodily_injury, data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_body_injury)[2] <- "frequency"
+
+crash_body_injury
+```
+
+```{r}
+crash_body_injury <- subset(crash_body_injury, bodily_injury!= '' & bodily_injury!= 'Unknown' & bodily_injury != 'Does Not Apply')
+crash_body_injury <- crash_body_injury[order(crash_body_injury$frequency, decreasing = T), ]
+crash_body_injury
+```
+
+
+```{r}
+# Create a bar plot using crash by month
+bar_graph_body_injury <- ggplot(data = crash_body_injury, aes(x = reorder(bodily_injury, -frequency), y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Type of Bodily Injury After Crash", x = "Injured Part of the Body", y = "Number of Case Reported") +  # Add title and axis labels
+  scale_fill_gradient(low = "#C7F9EE", high = "cornflowerblue", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_body_injury)
+```
+```{r}
+ggsave('images/body part injury after crash.png', plot = bar_graph_body_injury)
+```
+
+### Visualizing body part injury over the years years
+
+```{r}
+# Aggregate crash numbers by collision ID, month and year
+
+crash_body_injury_year <- aggregate(collision_id ~ bodily_injury + year , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_body_injury_year)[3] <- "frequency"
+
+crash_body_injury_year <- subset(crash_body_injury_year, bodily_injury!= '' & bodily_injury!= 'Unknown' & bodily_injury != 'Does Not Apply')
+crash_body_injury_year <- crash_body_injury_year[order(crash_body_injury_year$frequency, decreasing = T), ]
+
+
+head(crash_body_injury_year)
+```
+
+
+```{r fig.height= 6}
+# Create a bar plot using crash by month & year
+bar_graph_body_injury_year <- ggplot(data = crash_body_injury_year, aes(x = reorder(bodily_injury, -frequency), y = frequency, fill = frequency)) +
+  facet_grid(year ~ .) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Bodily Injury Type after Crash over the Years", x = "Body Part Injury", y = "Number of times occured") +  # Add title and axis labels
+  scale_fill_gradient(low = "blue", high = "red", name = "Frequency") + 
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_body_injury_year)
+
+```
+```{r}
+ggsave('images/body part injury after crash by year.png', plot = bar_graph_body_injury_year)
+```
+
+### 8-a) visualizing safety equipment used during a crash for uninjured passengers
+
+```{r}
+# only keeping data for unspecified injury which basically means no injury
+crash_safety_equipment_filtered <- subset(crash_data_selected, !(person_injury %in% c("Injured", "Killed")))
+
+# Aggregate crash numbers by collision ID and safety_equipment
+
+crash_safety_equipment <- aggregate(collision_id ~ safety_equipment, data = crash_safety_equipment_filtered, FUN = function(collision_id) length(collision_id))
+
+
+# Rename the column
+names(crash_safety_equipment)[2] <- "frequency"
+
+crash_safety_equipment
+```
+
+```{r}
+# removing unnecessary values
+crash_safety_equipment <- subset(crash_safety_equipment, safety_equipment != '' & safety_equipment!= '-' & safety_equipment != 'None' & safety_equipment != 'Other' & safety_equipment!= 'Unknown')
+crash_safety_equipment <- crash_safety_equipment[order(crash_safety_equipment$frequency, decreasing = T), ]
+crash_safety_equipment
+```
+
+# marging similar category
+```{r}
+# first, merge any thing related to seat belt into one category
+crash_safety_equipment <- crash_safety_equipment %>%
+  mutate(safety_equipment = case_when(safety_equipment %in% c("Lap Belt/Harness", "Lap Belt", "Harness", "Lap Belt & Harness") ~ "Lap Belt & Harness", TRUE ~ safety_equipment))
+    
+
+# Merge any thing related to Air Bag Deployed one category
+crash_safety_equipment <- crash_safety_equipment %>%
+  mutate(safety_equipment = ifelse(grepl("Air Bag Deployed/Lap Belt/Harness", safety_equipment) | grepl("Air Bag Deployed", safety_equipment) | grepl("Air Bag Deployed/Lap Belt", safety_equipment) | grepl("Air Bag Deployed/Child Restraint", safety_equipment), "Air Bag Deployed", safety_equipment))
+
+# Merge any thing related to Helmet into one category
+crash_safety_equipment <- crash_safety_equipment %>%
+  mutate(safety_equipment = ifelse(grepl("Helmet Only (In-Line Skater/Bicyclist)", safety_equipment) | grepl("Helmet (Motorcycle Only)", safety_equipment) | grepl("Helmet/Other (In-Line Skater/Bicyclist)", safety_equipment), "Helmet/Other (In-Line Skater/Bicyclist)", safety_equipment))
+
+
+crash_safety_equipment
+
+
+```
+
+```{r fig.height= 8}
+# Create a bar plot using crash body part injured
+bar_graph_safety_equipment <- ggplot(data = crash_safety_equipment, aes(x = reorder(safety_equipment, -frequency), y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Type of safety equipment used during Crash", x = "safety equipment", y = "Number of incidents") +  # Add title and axis labels
+  scale_fill_gradient(low = "cornflowerblue", high = "cornflowerblue", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_safety_equipment)
+```
+```{r}
+ggsave('images/safety equipment used during crash - uninjured.png', plot = bar_graph_safety_equipment)
+```
+
+### Visualizing safety equipmwnt used over the years for uninjured
+
+```{r}
+# separating uninjured peoples
+crash_safety_equipment_filtered <- subset(crash_data_selected, !(person_injury %in% c("Injured", "Killed")))
+
+# Aggregate crash numbers by collision ID, month and year
+
+crash_safety_equipment_year <- aggregate(collision_id ~ safety_equipment + year , data = crash_safety_equipment_filtered, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_safety_equipment_year)[3] <- "frequency"
+
+crash_safety_equipment_year <- subset(crash_safety_equipment_year, safety_equipment != '' & safety_equipment!= '-' & safety_equipment != 'None' & safety_equipment != 'Other' & safety_equipment!= 'Unknown')
+crash_safety_equipment_year <- crash_safety_equipment_year[order(crash_safety_equipment_year$frequency, decreasing = T), ]
+
+
+head(crash_safety_equipment_year)
+```
+
+# marging similar category
+```{r}
+# first, merge any thing related to seat belt into one category
+crash_safety_equipment_year <- crash_safety_equipment_year %>%
+  mutate(safety_equipment = case_when(safety_equipment %in% c("Lap Belt/Harness", "Lap Belt", "Harness", "Lap Belt & Harness") ~ "Lap Belt & Harness", TRUE ~ safety_equipment))
+    
+
+# Merge any thing related to Air Bag Deployed one category
+crash_safety_equipment_year <- crash_safety_equipment_year %>%
+  mutate(safety_equipment = ifelse(grepl("Air Bag Deployed/Lap Belt/Harness", safety_equipment) | grepl("Air Bag Deployed", safety_equipment) | grepl("Air Bag Deployed/Lap Belt", safety_equipment) | grepl("Air Bag Deployed/Child Restraint", safety_equipment), "Air Bag Deployed", safety_equipment))
+
+# Merge any thing related to Helmet into one category
+crash_safety_equipment_year <- crash_safety_equipment_year %>%
+  mutate(safety_equipment = ifelse(grepl("Helmet Only (In-Line Skater/Bicyclist)", safety_equipment) | grepl("Helmet (Motorcycle Only)", safety_equipment) | grepl("Helmet/Other (In-Line Skater/Bicyclist)", safety_equipment), "Helmet/Other (In-Line Skater/Bicyclist)", safety_equipment))
+
+
+head(crash_safety_equipment_year, 10)
+
+
+```
+
+```{r fig.height= 7}
+# Create a bar plot using crash by safety equipment & year
+bar_graph_safety_equipment_year <- ggplot(data = crash_safety_equipment_year, aes(x = reorder(safety_equipment, -frequency), y = frequency, fill = frequency)) +
+  facet_grid(year ~ .) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Safety Equipment used on crashed vehicle over the Years", x = "Safety equipment", y = "Number of times") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightgreen", high = "darkgreen", name = "Frequency") + 
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_safety_equipment_year)
+
+```
+```{r}
+ggsave('Safety Equipment used on crashed vehicle over the years uninjured.png', plot = bar_graph_safety_equipment_year)
+```
+
+
+
+### 9) visualizing factors that causes crash
+
+```{r}
+
+# Aggregate crash numbers by collision ID and contributing factor_1
+
+crash_contributing_factor_1 <- aggregate(collision_id ~ contributing_factor_1, data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_contributing_factor_1)[2] <- "frequency"
+
+crash_contributing_factor_1
+```
+
+```{r}
+# removing unnecessary values
+crash_contributing_factor_1 <- subset(crash_contributing_factor_1, contributing_factor_1 != '' & contributing_factor_1!= 'Unspecified')
+crash_contributing_factor_1 <- crash_contributing_factor_1[order(crash_contributing_factor_1$frequency, decreasing = T), ]
+head(crash_contributing_factor_1)
+```
+```{r}
+
+```
+
+
+# marging similar category
+```{r}
+# first, merge any thing related to cellphone into one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Cell Phone (hand-Held)", "Cell Phone (hands-free)", "Other Electronic Device", "Texting", "Listening/Using Headphones", "Using On Board Navigation Device") ~ "Cell Phone/elcetronic device usage", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to vehicle defect one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Brakes Defective", "Vehicle Vandalism", "Other Lighting Defects", "Tinted Windows", "Tire Failure/Inadequate", "Headlights Defective", "Shoulders Defective/Improper", "Steering Failure", "Windshield Inadequate", "Oversized Vehicle") ~ "vehicular issues", TRUE ~ contributing_factor_1))
+
+
+# Merge any thing related to illness in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Physical Disability", "Illnes", "Fell Asleep","Fatigued/Drowsy", "Lost Consciousness") ~ "illness", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to drink or drug in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Alcohol Involvement", "Drugs (illegal)", "Prescription Medication") ~ "Drug or alcohol", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to distractions in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Driver Inattention/Distraction", "Passenger Distraction", "Outside Car Distraction", "Eating or Drinking") ~ "Distractions", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to unsafe / risky driving in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Backing Unsafely", "Passing or Lane Usage Improper", "Passing Too Closely", "Aggressive Driving/Road Rage","Unsafe Speed", "Following Too Closely", "Turning Improperly", "Unsafe Lane Changing", "Failure to Keep Right", "Driver Inexperience") ~ "unsafe / risky driving", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to failure on authority side / road issues in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Pavement Slippery", "Obstruction/Debris", "Traffic Control Device Improper/Non-Working", "Pavement Defective", "Lane Marking Improper/Inadequate") ~ "failure on authority side / road issues", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to other vehicle or outsider fault in one category
+crash_contributing_factor_1 <- crash_contributing_factor_1 %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Other Vehicular", "Animals Action","Glare", "Driverless/Runaway Vehicle", "Reaction to Uninvolved Vehicle", "Eating or Drinking") ~ "Other vehicle or outsider fault", TRUE ~ contributing_factor_1))
+
+head(crash_contributing_factor_1)
+
+
+```
+
+```{r fig.height= 8}
+# Create a bar plot for Contributing factor for crash
+bar_graph_contributing_factor_1 <- ggplot(data = crash_contributing_factor_1, aes(x = reorder(contributing_factor_1, -frequency), y = frequency, fill = frequency)) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Primary contributing factor for Crash", x = "Contributing Factor", y = "Number of occurance") +  # Add title and axis labels
+  scale_fill_gradient(low = "#FF9999", high = "darkred", name = "Frequency") +
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_contributing_factor_1)
+```
+```{r}
+ggsave('images/primary contributing factor for crash.png', plot = bar_graph_contributing_factor_1)
+```
+
+### Visualizing primary factors over the years
+
+```{r}
+# Aggregate crash numbers by collision ID, primary contributing factor and year
+
+crash_contributing_factor_1_year <- aggregate(collision_id ~ contributing_factor_1 + year , data = crash_data_selected, FUN = function(collision_id) length(collision_id))
+
+# Rename the column
+names(crash_contributing_factor_1_year)[3] <- "frequency"
+
+crash_contributing_factor_1_year <- subset(crash_contributing_factor_1_year, contributing_factor_1 != '' & contributing_factor_1!= 'Unspecified')
+
+
+head(crash_contributing_factor_1_year)
+```
+
+# marging similar category
+```{r}
+# first, merge any thing related to cellphone into one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Cell Phone (hand-Held)", "Cell Phone (hands-free)", "Other Electronic Device", "Texting", "Listening/Using Headphones", "Using On Board Navigation Device") ~ "Cell Phone/elcetronic device usage", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to vehicle defect one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Brakes Defective", "Vehicle Vandalism", "Other Lighting Defects", "Tinted Windows", "Tire Failure/Inadequate", "Headlights Defective", "Shoulders Defective/Improper", "Steering Failure", "Windshield Inadequate", "Oversized Vehicle") ~ "vehicular issues", TRUE ~ contributing_factor_1))
+
+
+# Merge any thing related to illness in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Physical Disability", "Illnes", "Fell Asleep","Fatigued/Drowsy", "Lost Consciousness") ~ "illness", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to drink or drug in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Alcohol Involvement", "Drugs (illegal)", "Prescription Medication") ~ "Drug or alcohol", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to distractions in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Driver Inattention/Distraction", "Passenger Distraction", "Outside Car Distraction", "Eating or Drinking") ~ "Distractions", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to unsafe / risky driving in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Backing Unsafely", "Passing or Lane Usage Improper", "Passing Too Closely", "Aggressive Driving/Road Rage","Unsafe Speed", "Following Too Closely", "Turning Improperly", "Unsafe Lane Changing", "Failure to Keep Right", "Driver Inexperience") ~ "unsafe / risky driving", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to failure on authority side / road issues in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Pavement Slippery", "Obstruction/Debris", "Traffic Control Device Improper/Non-Working", "Pavement Defective", "Lane Marking Improper/Inadequate") ~ "failure on authority side / road issues", TRUE ~ contributing_factor_1))
+
+# Merge any thing related to other vehicle or outsider fault in one category
+crash_contributing_factor_1_year <- crash_contributing_factor_1_year %>%
+  mutate(contributing_factor_1 = case_when(contributing_factor_1 %in% c("Other Vehicular", "Animals Action","Glare", "Driverless/Runaway Vehicle", "Reaction to Uninvolved Vehicle", "Eating or Drinking") ~ "Other vehicle or outsider fault", TRUE ~ contributing_factor_1))
+
+crash_contributing_factor_1_year
+head(crash_contributing_factor_1_year, 10)
+
+
+```
+
+```{r fig.height= 10}
+# Create a bar plot using crash by safety equipment & year
+bar_graph_contributing_factor_1_year <- ggplot(data = crash_contributing_factor_1_year, aes(x = reorder(contributing_factor_1, -frequency), y = frequency, fill = frequency)) +
+  facet_grid(year ~ .) +
+  geom_bar(stat = "identity") +  # Create bars with specified colors
+  labs(title = "Primary Contributing factor for vehicle Collision over the Years", x = "Primary Factor", y = "Number of times") +  # Add title and axis labels
+  scale_fill_gradient(low = "lightsalmon", high = "darkred", name = "Frequency") + 
+  theme_minimal() +  # Use a minimal theme
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels for better readability
+
+# Show the plot
+print(bar_graph_contributing_factor_1_year)
+
+```
+```{r}
+ggsave('images/primary contributor to crash over the years.png', plot = bar_graph_contributing_factor_1_year)
+```

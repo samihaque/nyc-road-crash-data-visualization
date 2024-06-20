@@ -1,0 +1,557 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={NYC Car Crash Data Visualization},
+  pdfauthor={Ubaydul H Sami},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{NYC Car Crash Data Visualization}
+\author{Ubaydul H Sami}
+\date{2024-03-15}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# This code will not be evaluated automatically.}
+\DocumentationTok{\#\# (Notice the eval = FALSE declaration in the options section of the}
+\DocumentationTok{\#\# code chunk)}
+
+\NormalTok{my\_packages }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"broom"}\NormalTok{, }\StringTok{"coefplot"}\NormalTok{, }\StringTok{"cowplot"}\NormalTok{,}
+                 \StringTok{"gapminder"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"ggrepel"}\NormalTok{, }\StringTok{"ggridges"}\NormalTok{, }\StringTok{"gridExtra"}\NormalTok{,}
+                 \StringTok{"here"}\NormalTok{, }\StringTok{"interplot"}\NormalTok{, }\StringTok{"margins"}\NormalTok{, }\StringTok{"maps"}\NormalTok{, }\StringTok{"mapproj"}\NormalTok{,}
+                 \StringTok{"mapdata"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"quantreg"}\NormalTok{, }\StringTok{"rlang"}\NormalTok{, }\StringTok{"scales"}\NormalTok{,}
+                 \StringTok{"survey"}\NormalTok{, }\StringTok{"srvyr"}\NormalTok{, }\StringTok{"viridis"}\NormalTok{, }\StringTok{"viridisLite"}\NormalTok{, }\StringTok{"devtools"}\NormalTok{)}
+
+\FunctionTok{install.packages}\NormalTok{(my\_packages, }\AttributeTok{repos =} \StringTok{"http://cran.rstudio.com"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{first-we-will-load-the-dataset-to-view-all-the-data-on-our-raw-dataset}{%
+\section{first we will load the dataset to view all the data on our raw
+dataset}\label{first-we-will-load-the-dataset-to-view-all-the-data-on-our-raw-dataset}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crash\_data }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{\textquotesingle{}dataset/Motor\_Vehicle\_Collisions\_\_Person.csv\textquotesingle{}}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(crash\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   UNIQUE_ID COLLISION_ID CRASH_DATE CRASH_TIME
+## 1  10249006      4229554 10/26/2019       9:43
+## 2  10255054      4230587 10/25/2019      15:15
+## 3  10253177      4230550 10/26/2019      17:55
+## 4   6650180      3565527 11/21/2016      13:05
+## 5  10255516      4231168 10/25/2019      11:16
+## 6  10253606      4230743 10/24/2019      19:15
+##                              PERSON_ID PERSON_TYPE PERSON_INJURY VEHICLE_ID
+## 1 31aa2bc0-f545-444f-8cdb-f1cb5cf00b89    Occupant   Unspecified   19141108
+## 2 4629e500-a73e-48dc-b8fb-53124d124b80    Occupant   Unspecified   19144075
+## 3 ae48c136-1383-45db-83f4-2a5eecfb7cff    Occupant   Unspecified   19143133
+## 4                              2782525    Occupant   Unspecified         NA
+## 5 e038e18f-40fb-4471-99cf-345eae36e064    Occupant   Unspecified   19144329
+## 6 84bcb3a7-d201-4c61-9e30-fe29268c1074    Occupant       Injured   19143343
+##   PERSON_AGE    EJECTION EMOTIONAL_STATUS  BODILY_INJURY
+## 1         NA                                            
+## 2         33 Not Ejected   Does Not Apply Does Not Apply
+## 3         55                                            
+## 4         NA                                            
+## 5          7 Not Ejected   Does Not Apply Does Not Apply
+## 6         27 Not Ejected        Conscious           Back
+##                                                                    POSITION_IN_VEHICLE
+## 1                                                                                     
+## 2 Front passenger, if two or more persons, including the driver, are in the front seat
+## 3                                                                                     
+## 4                                                                                     
+## 5                                 Right rear passenger or motorcycle sidecar passenger
+## 6                                                                               Driver
+##     SAFETY_EQUIPMENT PED_LOCATION PED_ACTION                   COMPLAINT
+## 1                                                                       
+## 2 Lap Belt & Harness                                      Does Not Apply
+## 3                                                                       
+## 4                                                                       
+## 5           Lap Belt                                      Does Not Apply
+## 6 Lap Belt & Harness                         Complaint of Pain or Nausea
+##          PED_ROLE CONTRIBUTING_FACTOR_1 CONTRIBUTING_FACTOR_2 PERSON_SEX
+## 1      Registrant                                                      U
+## 2       Passenger                                                      F
+## 3      Registrant                                                      M
+## 4 Notified Person                                                       
+## 5       Passenger                                                      F
+## 6          Driver                                                      M
+\end{verbatim}
+
+\hypertarget{now-that-we-have-our-whole-dataset-loaded-we-will-try-to-select-columns-that-we-consider-as-important-or-useful-for-our-project}{%
+\section{now that we have our whole dataset loaded, we will try to
+select columns that we consider as important or useful for our
+project}\label{now-that-we-have-our-whole-dataset-loaded-we-will-try-to-select-columns-that-we-consider-as-important-or-useful-for-our-project}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we will first see what are the names of the data columns for our dataset}
+\FunctionTok{names}\NormalTok{(crash\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "UNIQUE_ID"             "COLLISION_ID"          "CRASH_DATE"           
+##  [4] "CRASH_TIME"            "PERSON_ID"             "PERSON_TYPE"          
+##  [7] "PERSON_INJURY"         "VEHICLE_ID"            "PERSON_AGE"           
+## [10] "EJECTION"              "EMOTIONAL_STATUS"      "BODILY_INJURY"        
+## [13] "POSITION_IN_VEHICLE"   "SAFETY_EQUIPMENT"      "PED_LOCATION"         
+## [16] "PED_ACTION"            "COMPLAINT"             "PED_ROLE"             
+## [19] "CONTRIBUTING_FACTOR_1" "CONTRIBUTING_FACTOR_2" "PERSON_SEX"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# now we will select the useful (assumed) columns}
+
+\NormalTok{crash\_data\_selected }\OtherTok{=}\NormalTok{ crash\_data[,}\FunctionTok{c}\NormalTok{(}\StringTok{"UNIQUE\_ID"}\NormalTok{, }\StringTok{"COLLISION\_ID"}\NormalTok{, }\StringTok{"CRASH\_DATE"}\NormalTok{, }\StringTok{"CRASH\_TIME"}\NormalTok{, }\StringTok{"PERSON\_INJURY"}\NormalTok{, }\StringTok{"EMOTIONAL\_STATUS"}\NormalTok{, }\StringTok{"BODILY\_INJURY"}\NormalTok{, }\StringTok{"POSITION\_IN\_VEHICLE"}\NormalTok{, }\StringTok{"SAFETY\_EQUIPMENT"}\NormalTok{, }\StringTok{"COMPLAINT"}\NormalTok{, }\StringTok{"PED\_ACTION"}\NormalTok{, }\StringTok{"CONTRIBUTING\_FACTOR\_1"}\NormalTok{, }\StringTok{"CONTRIBUTING\_FACTOR\_2"}\NormalTok{, }\StringTok{"PERSON\_SEX"}\NormalTok{)]}
+
+\FunctionTok{head}\NormalTok{(crash\_data\_selected)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   UNIQUE_ID COLLISION_ID CRASH_DATE CRASH_TIME PERSON_INJURY EMOTIONAL_STATUS
+## 1  10249006      4229554 10/26/2019       9:43   Unspecified                 
+## 2  10255054      4230587 10/25/2019      15:15   Unspecified   Does Not Apply
+## 3  10253177      4230550 10/26/2019      17:55   Unspecified                 
+## 4   6650180      3565527 11/21/2016      13:05   Unspecified                 
+## 5  10255516      4231168 10/25/2019      11:16   Unspecified   Does Not Apply
+## 6  10253606      4230743 10/24/2019      19:15       Injured        Conscious
+##    BODILY_INJURY
+## 1               
+## 2 Does Not Apply
+## 3               
+## 4               
+## 5 Does Not Apply
+## 6           Back
+##                                                                    POSITION_IN_VEHICLE
+## 1                                                                                     
+## 2 Front passenger, if two or more persons, including the driver, are in the front seat
+## 3                                                                                     
+## 4                                                                                     
+## 5                                 Right rear passenger or motorcycle sidecar passenger
+## 6                                                                               Driver
+##     SAFETY_EQUIPMENT                   COMPLAINT PED_ACTION
+## 1                                                          
+## 2 Lap Belt & Harness              Does Not Apply           
+## 3                                                          
+## 4                                                          
+## 5           Lap Belt              Does Not Apply           
+## 6 Lap Belt & Harness Complaint of Pain or Nausea           
+##   CONTRIBUTING_FACTOR_1 CONTRIBUTING_FACTOR_2 PERSON_SEX
+## 1                                                      U
+## 2                                                      F
+## 3                                                      M
+## 4                                                       
+## 5                                                      F
+## 6                                                      M
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# for the purpose of easier access we will change columns name to all lowercase letter}
+\FunctionTok{names}\NormalTok{(crash\_data\_selected) }\OtherTok{\textless{}{-}} \FunctionTok{tolower}\NormalTok{(}\FunctionTok{names}\NormalTok{(crash\_data\_selected))}
+\FunctionTok{head}\NormalTok{(crash\_data\_selected)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   unique_id collision_id crash_date crash_time person_injury emotional_status
+## 1  10249006      4229554 10/26/2019       9:43   Unspecified                 
+## 2  10255054      4230587 10/25/2019      15:15   Unspecified   Does Not Apply
+## 3  10253177      4230550 10/26/2019      17:55   Unspecified                 
+## 4   6650180      3565527 11/21/2016      13:05   Unspecified                 
+## 5  10255516      4231168 10/25/2019      11:16   Unspecified   Does Not Apply
+## 6  10253606      4230743 10/24/2019      19:15       Injured        Conscious
+##    bodily_injury
+## 1               
+## 2 Does Not Apply
+## 3               
+## 4               
+## 5 Does Not Apply
+## 6           Back
+##                                                                    position_in_vehicle
+## 1                                                                                     
+## 2 Front passenger, if two or more persons, including the driver, are in the front seat
+## 3                                                                                     
+## 4                                                                                     
+## 5                                 Right rear passenger or motorcycle sidecar passenger
+## 6                                                                               Driver
+##     safety_equipment                   complaint ped_action
+## 1                                                          
+## 2 Lap Belt & Harness              Does Not Apply           
+## 3                                                          
+## 4                                                          
+## 5           Lap Belt              Does Not Apply           
+## 6 Lap Belt & Harness Complaint of Pain or Nausea           
+##   contributing_factor_1 contributing_factor_2 person_sex
+## 1                                                      U
+## 2                                                      F
+## 3                                                      M
+## 4                                                       
+## 5                                                      F
+## 6                                                      M
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# checking the datatypes of all columns}
+
+\FunctionTok{str}\NormalTok{(crash\_data\_selected)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    5296228 obs. of  14 variables:
+##  $ unique_id            : int  10249006 10255054 10253177 6650180 10255516 10253606 10251336 10248708 10250179 10253792 ...
+##  $ collision_id         : int  4229554 4230587 4230550 3565527 4231168 4230743 4230047 4229547 4229808 4230915 ...
+##  $ crash_date           : chr  "10/26/2019" "10/25/2019" "10/26/2019" "11/21/2016" ...
+##  $ crash_time           : chr  "9:43" "15:15" "17:55" "13:05" ...
+##  $ person_injury        : chr  "Unspecified" "Unspecified" "Unspecified" "Unspecified" ...
+##  $ emotional_status     : chr  "" "Does Not Apply" "" "" ...
+##  $ bodily_injury        : chr  "" "Does Not Apply" "" "" ...
+##  $ position_in_vehicle  : chr  "" "Front passenger, if two or more persons, including the driver, are in the front seat" "" "" ...
+##  $ safety_equipment     : chr  "" "Lap Belt & Harness" "" "" ...
+##  $ complaint            : chr  "" "Does Not Apply" "" "" ...
+##  $ ped_action           : chr  "" "" "" "" ...
+##  $ contributing_factor_1: chr  "" "" "" "" ...
+##  $ contributing_factor_2: chr  "" "" "" "" ...
+##  $ person_sex           : chr  "U" "F" "M" "" ...
+\end{verbatim}
+
+\hypertarget{now-from-crash_date-column-we-will-create-two-new-columns-year-month-that-later-on-we-will-use-visualizing-data}{%
+\section{Now from `crash\_date' column we will create two new columns
+`year' \& `month' that later on we will use visualizing
+data}\label{now-from-crash_date-column-we-will-create-two-new-columns-year-month-that-later-on-we-will-use-visualizing-data}}
+
+\hypertarget{year---will-be-used-to-visualize-accident-increament-or-decrement-over-the-years}{%
+\subsubsection{`year' -\textgreater{} will be used to visualize accident
+increament or decrement over the
+years}\label{year---will-be-used-to-visualize-accident-increament-or-decrement-over-the-years}}
+
+\hypertarget{month---will-be-used-to-visualize-which-time-of-the-month-has-highest-lowest-number-of-crash-occured}{%
+\subsubsection{`month' -\textgreater{} will be used to visualize which
+time of the month has highest \& lowest number of crash
+occured}\label{month---will-be-used-to-visualize-which-time-of-the-month-has-highest-lowest-number-of-crash-occured}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we will first change the datatype of \textquotesingle{}crash\_date\textquotesingle{} columns from character to Date type}
+
+\NormalTok{crash\_data\_selected}\SpecialCharTok{$}\NormalTok{crash\_date }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{crash\_date, }\AttributeTok{format =} \StringTok{"\%m/\%d/\%Y"}\NormalTok{)}
+
+\CommentTok{\# Now, create new columns \textquotesingle{}year\textquotesingle{} \& \textquotesingle{}month\textquotesingle{}}
+\NormalTok{crash\_data\_selected}\SpecialCharTok{$}\NormalTok{year }\OtherTok{\textless{}{-}} \FunctionTok{format}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{crash\_date, }\StringTok{"\%Y"}\NormalTok{)}
+\NormalTok{crash\_data\_selected}\SpecialCharTok{$}\NormalTok{month }\OtherTok{\textless{}{-}} \FunctionTok{format}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{crash\_date, }\StringTok{"\%m"}\NormalTok{)}
+
+\CommentTok{\# Check the data types of new columns}
+\FunctionTok{str}\NormalTok{(crash\_data\_selected)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    5296228 obs. of  16 variables:
+##  $ unique_id            : int  10249006 10255054 10253177 6650180 10255516 10253606 10251336 10248708 10250179 10253792 ...
+##  $ collision_id         : int  4229554 4230587 4230550 3565527 4231168 4230743 4230047 4229547 4229808 4230915 ...
+##  $ crash_date           : Date, format: "2019-10-26" "2019-10-25" ...
+##  $ crash_time           : chr  "9:43" "15:15" "17:55" "13:05" ...
+##  $ person_injury        : chr  "Unspecified" "Unspecified" "Unspecified" "Unspecified" ...
+##  $ emotional_status     : chr  "" "Does Not Apply" "" "" ...
+##  $ bodily_injury        : chr  "" "Does Not Apply" "" "" ...
+##  $ position_in_vehicle  : chr  "" "Front passenger, if two or more persons, including the driver, are in the front seat" "" "" ...
+##  $ safety_equipment     : chr  "" "Lap Belt & Harness" "" "" ...
+##  $ complaint            : chr  "" "Does Not Apply" "" "" ...
+##  $ ped_action           : chr  "" "" "" "" ...
+##  $ contributing_factor_1: chr  "" "" "" "" ...
+##  $ contributing_factor_2: chr  "" "" "" "" ...
+##  $ person_sex           : chr  "U" "F" "M" "" ...
+##  $ year                 : chr  "2019" "2019" "2019" "2016" ...
+##  $ month                : chr  "10" "10" "10" "11" ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# View the dataset}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(crash\_data\_selected))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   unique_id collision_id crash_date crash_time person_injury emotional_status
+## 1  10249006      4229554 2019-10-26       9:43   Unspecified                 
+## 2  10255054      4230587 2019-10-25      15:15   Unspecified   Does Not Apply
+## 3  10253177      4230550 2019-10-26      17:55   Unspecified                 
+## 4   6650180      3565527 2016-11-21      13:05   Unspecified                 
+## 5  10255516      4231168 2019-10-25      11:16   Unspecified   Does Not Apply
+## 6  10253606      4230743 2019-10-24      19:15       Injured        Conscious
+##    bodily_injury
+## 1               
+## 2 Does Not Apply
+## 3               
+## 4               
+## 5 Does Not Apply
+## 6           Back
+##                                                                    position_in_vehicle
+## 1                                                                                     
+## 2 Front passenger, if two or more persons, including the driver, are in the front seat
+## 3                                                                                     
+## 4                                                                                     
+## 5                                 Right rear passenger or motorcycle sidecar passenger
+## 6                                                                               Driver
+##     safety_equipment                   complaint ped_action
+## 1                                                          
+## 2 Lap Belt & Harness              Does Not Apply           
+## 3                                                          
+## 4                                                          
+## 5           Lap Belt              Does Not Apply           
+## 6 Lap Belt & Harness Complaint of Pain or Nausea           
+##   contributing_factor_1 contributing_factor_2 person_sex year month
+## 1                                                      U 2019    10
+## 2                                                      F 2019    10
+## 3                                                      M 2019    10
+## 4                                                        2016    11
+## 5                                                      F 2019    10
+## 6                                                      M 2019    10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# above we see year \& month column datatype is \textquotesingle{}double\textquotesingle{}, we will change the datatype to integer for convenience}
+
+\NormalTok{crash\_data\_selected}\SpecialCharTok{$}\NormalTok{year }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{year)}
+\NormalTok{crash\_data\_selected}\SpecialCharTok{$}\NormalTok{month }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{month)}
+
+\CommentTok{\# checking the datatype again to verify change was made}
+
+\FunctionTok{str}\NormalTok{(crash\_data\_selected)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    5296228 obs. of  16 variables:
+##  $ unique_id            : int  10249006 10255054 10253177 6650180 10255516 10253606 10251336 10248708 10250179 10253792 ...
+##  $ collision_id         : int  4229554 4230587 4230550 3565527 4231168 4230743 4230047 4229547 4229808 4230915 ...
+##  $ crash_date           : Date, format: "2019-10-26" "2019-10-25" ...
+##  $ crash_time           : chr  "9:43" "15:15" "17:55" "13:05" ...
+##  $ person_injury        : chr  "Unspecified" "Unspecified" "Unspecified" "Unspecified" ...
+##  $ emotional_status     : chr  "" "Does Not Apply" "" "" ...
+##  $ bodily_injury        : chr  "" "Does Not Apply" "" "" ...
+##  $ position_in_vehicle  : chr  "" "Front passenger, if two or more persons, including the driver, are in the front seat" "" "" ...
+##  $ safety_equipment     : chr  "" "Lap Belt & Harness" "" "" ...
+##  $ complaint            : chr  "" "Does Not Apply" "" "" ...
+##  $ ped_action           : chr  "" "" "" "" ...
+##  $ contributing_factor_1: chr  "" "" "" "" ...
+##  $ contributing_factor_2: chr  "" "" "" "" ...
+##  $ person_sex           : chr  "U" "F" "M" "" ...
+##  $ year                 : int  2019 2019 2019 2016 2019 2019 2019 2019 2019 2019 ...
+##  $ month                : int  10 10 10 11 10 10 10 10 10 10 ...
+\end{verbatim}
+
+\hypertarget{since-we-have-our-initial-version-of-desired-dataset-we-will-first-export-it-for-keeping-it-safe-and-then-will-start-visualizing-our-data}{%
+\section{Since we have our initial version of desired dataset we will
+first export it (for keeping it safe) and then will start visualizing
+our
+data}\label{since-we-have-our-initial-version-of-desired-dataset-we-will-first-export-it-for-keeping-it-safe-and-then-will-start-visualizing-our-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Export dataset to a CSV file}
+\FunctionTok{write.csv}\NormalTok{(crash\_data\_selected, }\StringTok{"dataset/crash\_data\_selected.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{visualizing-crash-number-over-the-years}{%
+\subsubsection{visualizing crash number over the
+years}\label{visualizing-crash-number-over-the-years}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{number\_of\_years }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(}\FunctionTok{unique}\NormalTok{(crash\_data\_selected}\SpecialCharTok{$}\NormalTok{year))}
+\NormalTok{number\_of\_years}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 13
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# droping rows with 2024 data beacuse it is nto a full year yet}
+\NormalTok{crash\_data\_selected }\OtherTok{\textless{}{-}}\NormalTok{ crash\_data\_selected[crash\_data\_selected}\SpecialCharTok{$}\NormalTok{year }\SpecialCharTok{!=} \DecValTok{2024}\NormalTok{, ]}
+
+\CommentTok{\# Aggregate crash numbers by collision ID and year}
+
+\NormalTok{crash\_counts }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(collision\_id }\SpecialCharTok{\textasciitilde{}}\NormalTok{ year, }\AttributeTok{data =}\NormalTok{ crash\_data\_selected, }\AttributeTok{FUN =} \ControlFlowTok{function}\NormalTok{(collision\_id) }\FunctionTok{length}\NormalTok{(collision\_id))}
+
+\CommentTok{\# Rename the column}
+\FunctionTok{names}\NormalTok{(crash\_counts)[}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \StringTok{"frequency"}
+
+\NormalTok{crash\_counts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    year frequency
+## 1  2012     27671
+## 2  2013     55615
+## 3  2014     51853
+## 4  2015     52171
+## 5  2016    800353
+## 6  2017    961775
+## 7  2018    946203
+## 8  2019    854269
+## 9  2020    413193
+## 10 2021    386075
+## 11 2022    362555
+## 12 2023    338984
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create the plot using crash\_counts dataframe}
+\NormalTok{time\_line }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(crash\_counts, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ year, }\AttributeTok{y =}\NormalTok{ frequency, }\AttributeTok{color =} \FunctionTok{as.factor}\NormalTok{(year))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Crash Numbers Over the Years by Collision ID"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Year"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Crash Number"}\NormalTok{,}
+       \AttributeTok{color =} \StringTok{"Year"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+
+\CommentTok{\# showing plot}
+\NormalTok{time\_line}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_file_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggsave}\NormalTok{(}\StringTok{\textquotesingle{}over the years crash data.png\textquotesingle{}}\NormalTok{, }\AttributeTok{plot =}\NormalTok{ time\_line)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Saving 8 x 5 in image
+\end{verbatim}
+
+\hypertarget{from-the-timeline-graph-we-see-number-of-collision-was-gradually-rising-2012-to-2017-and-it-starts-gradually-droping-from-2018-to-2023}{%
+\subsubsection{From the timeline graph we see number of collision was
+gradually rising 2012 to 2017 and it starts gradually droping from 2018
+to
+2023}\label{from-the-timeline-graph-we-see-number-of-collision-was-gradually-rising-2012-to-2017-and-it-starts-gradually-droping-from-2018-to-2023}}
+
+\hypertarget{we-may-want-to-find-out-what-happened-in-2017-that-helped-redusing-the-number-of-collisions-in-nyc}{%
+\subsubsection{we may want to find out what happened in 2017 that helped
+redusing the number of collisions in
+NYC}\label{we-may-want-to-find-out-what-happened-in-2017-that-helped-redusing-the-number-of-collisions-in-nyc}}
+
+\end{document}
