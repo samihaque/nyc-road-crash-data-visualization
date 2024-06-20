@@ -11,7 +11,7 @@ The project goes beyond demographics and injuries. It unveils pedestrian/bicycli
 These findings provide a powerful roadmap for improving traffic safety in NYC. By leveraging data-driven insights, we can develop evidence-based interventions to reduce collisions, protect public health, and minimize the impact on infrastructure
 
 # Data Description
-This project analyzes traffic accidents in New York City using a comprehensive dataset of police-reported collisions from April 2016 onwards. The data, available on the NYC Open Data platform [Motor Vehicle Collisions - Person Data (NYC)  ], provides valuable insights into various aspects of these incidents.
+This project analyzes traffic accidents in New York City using a comprehensive dataset of police-reported collisions from April 2016 onwards. The data, available on the NYC Open Data platform [Motor Vehicle Collisions - Person Data (NYC)](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Person/f55k-p6yu/about_data), provides valuable insights into various aspects of these incidents.
 
 **Unit of Observation:**
 Each record in the dataset represents a single individual involved in a reported traffic collision. This allows us to examine the characteristics and experiences of people impacted by these accidents.
