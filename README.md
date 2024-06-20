@@ -54,3 +54,7 @@ Furthermore, the dataset lacks clarity regarding its collection methodology. Itâ
 
 Acknowledging these limitations underscores the complexity of assessing trends in accident rates and emphasizes the need for comprehensive data collection methods and consideration of technological advancements in future analyses.
 
+## View the project final presentation here: [NYC car crash analysis presentation.pdf](https://github.com/user-attachments/files/15910443/nyc-car-crash-analysis-presentation.pdf)
+
+
+
