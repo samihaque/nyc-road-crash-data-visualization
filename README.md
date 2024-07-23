@@ -54,8 +54,8 @@ Furthermore, the dataset lacks clarity regarding its collection methodology. Itâ
 
 Acknowledging these limitations underscores the complexity of assessing trends in accident rates and emphasizes the need for comprehensive data collection methods and consideration of technological advancements in future analyses.
 
-## View the whole data analysis of NYC Vehicle Crash Data here: [EDA_file.docx](https://github.com/user-attachments/files/15910815/EDA_file.docx)
+## View the whole data analysis of NYC Vehicle Crash Data here: [EDA_file](https://docs.google.com/document/d/1pgNmANPuvEUuR-z_K2DS28PVWIcKeFna/edit?usp=sharing&ouid=103688941654366529008&rtpof=true&sd=true)
 
-## View the project final presentation here: [NYC car crash analysis presentation.pdf](https://github.com/user-attachments/files/15910443/nyc-car-crash-analysis-presentation.pdf)
+## View the project final presentation here: [NYC car crash analysis presentation](https://drive.google.com/file/d/1zobtzSdFz0RpPbQD-Lck3qRyCxXqKQmo/view?usp=sharing)
 
-## View the final report of analysis here: [Final_Report.docx](https://github.com/user-attachments/files/15910864/Final_Report.docx) 
+## View the final report of analysis here: [Final_Report](https://docs.google.com/document/d/1fWtRdeRjpixgI47a_lsNbLdo5WndDlcz/edit?usp=sharing&ouid=103688941654366529008&rtpof=true&sd=true) 
